@@ -25,8 +25,9 @@
                   update: false,
                   cancel: false,
                   table: false,
-                  rows: [{}],
-                  updateInTable: false
+                  rows: [],
+                  updateInTable: false,
+                  testTableData: 10
                 }
                 this.handleSubmit = this.handleSubmit.bind(this);
                 this.handleNameChange = this.handleNameChange.bind(this);
@@ -34,24 +35,32 @@
                 this.handlePhoneChange = this.handlePhoneChange.bind(this);
                 this.cancelClick = this.cancelClick.bind(this);
                 this.updateClick = this.updateClick.bind(this);
-                this.submitClick = this.submitClick.bind(this);
+              }
+              tableData  = function(newValue){
+                this.setState({testTableData: newValue})
+                console.log('New Value is '+newValue)
+              }
+              componentDidUpdate(){
+                console.log('Test tableData coming from child'+this.state.testTableData);
               }
 
               handleSubmit = function(e){
-                  e.preventDefault();
-                this.setState({table: true});
-                this.setState({rows: [
-                  {
-                    id: 1,
-                    name: this.state.name,
-                    email: this.state.email,
-                    phone: this.state.phone
-                  }
-                ]
-              } , () => {console.log(this.state.rows)});
-                this.setState({updateInTable: true} , () => {console.log(this.state.updateInTable)})
-                this.setState({submit: false});
-              }
+              e.preventDefault();
+              this.state.rows.push({
+                id: Date.now(),
+                name: this.state.name,
+                email: this.state.email,
+                phone: this.state.phone
+              })
+              this.setState({
+                  table: true,
+                  rows: this.state.rows,
+                  updateInTable: true,
+                  submit: false,
+                  cancel: false
+                });
+              {this.cancelClick()};
+               }
               handleNameChange =  function(e) {
                 this.setState({name: e.target.value , cancel: true});
                 if(e.target.value != ''){
@@ -69,9 +78,6 @@
                 if(e.target.value != ''){
                   this.setState({submit: true})
                 }
-              }
-              submitClick = function(){
-                this.setState({ cancel: false});
               }
               cancelClick = function(){
                 this.setState({name: '', email: '', phone: '', cancel: false, submit: false});
@@ -95,7 +101,7 @@
                         <label className="col-4">Phone: </label><input type="number" name="Phone" value={this.state.phone} onChange={this.handlePhoneChange} />
                       </div>
                       <div className="col-6 m-5">
-                        <input className="btn btn-success" type="submit" name="Submit" disabled={!this.state.submit} onClick={this.submitClick}/>
+                        <input className="btn btn-success" type="submit" name="Submit" disabled={!this.state.submit}/>
                         <button className="btn btn-info" value={this.state.update} disabled={!this.state.update} onClick={this.updateClick}>Update</button>
                         <button className="btn btn-danger" value={this.state.cancel} disabled={!this.state.cancel} onClick={this.cancelClick}>Cancel</button>
                       </div>
@@ -105,6 +111,8 @@
                      name={this.state.name}
                      rows={this.state.rows}
                      updateInTable={this.state.updateInTable}
+                     testTableData={this.state.testTableData}
+                     tableDataTest = {(newValue) => this.tableData(newValue)}
                      />
                   </div>
               )
@@ -113,13 +121,20 @@
         class Table extends React.Component{
             constructor(props){
               super(props);
-
+              this.state = {
+                testTableData: this.props.testTableData
+              }
+            }
+            componentDidMount(){
+              this.setState({testTableData: 20}, () => this.props.tableDataTest(this.state.testTableData))
             }
 
             componentDidUpdate() {
               console.log('From table '+this.props.updateInTable);
               if(this.props.updateInTable){
-                console.log('Coming from table '+this.props.rows);
+                for( var i in this.props.rows){
+                console.log(this.props.rows[i]);
+                }
               }
             }
           render(){
@@ -135,13 +150,15 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
-                      <td>{this.props.name}</td>
-                      <td></td>
-                      <td></td>
+                    {this.props.rows.map((row, id) =>
+                    <tr key={id}>
+                      <td>{row.name}</td>
+                      <td>{row.email}</td>
+                      <td>{row.phone}</td>
                       <td className="table-button"><div className="btn btn-danger">Delete</div></td>
                       <td className="table-button"><div className="btn btn-primary">Edit</div></td>
                     </tr>
+                    )}
                   </tbody>
                 </table>
               )
