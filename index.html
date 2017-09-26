@@ -27,7 +27,8 @@
                   table: false,
                   rows: [],
                   updateInTable: false,
-                  testTableData: 10
+                  editRowId: 0,
+                  deleteRowId: 0
                 }
                 this.handleSubmit = this.handleSubmit.bind(this);
                 this.handleNameChange = this.handleNameChange.bind(this);
@@ -36,12 +37,15 @@
                 this.cancelClick = this.cancelClick.bind(this);
                 this.updateClick = this.updateClick.bind(this);
               }
-              tableData  = function(newValue){
-                this.setState({testTableData: newValue})
-                console.log('New Value is '+newValue)
+              editInRow = function(editId){
+                this.setState({editRowId: editId, update: true});
+
+              }
+              deleteInRow = function(deleteId){
+                this.setState({deleteRowId: deleteId})
               }
               componentDidUpdate(){
-                console.log('Test tableData coming from child'+this.state.testTableData);
+
               }
 
               handleSubmit = function(e){
@@ -111,8 +115,8 @@
                      name={this.state.name}
                      rows={this.state.rows}
                      updateInTable={this.state.updateInTable}
-                     testTableData={this.state.testTableData}
-                     tableDataTest = {(newValue) => this.tableData(newValue)}
+                     editRowId = {(editId) => this.editInRow(editId)}
+                     deleteRowId = {(deleteId) => this.editInRow(deleteId)}
                      />
                   </div>
               )
@@ -122,21 +126,23 @@
             constructor(props){
               super(props);
               this.state = {
-                testTableData: this.props.testTableData
+                editRow: 0,
+                deleteRow: 0
               }
             }
             componentDidMount(){
-              this.setState({testTableData: 20}, () => this.props.tableDataTest(this.state.testTableData))
             }
 
             componentDidUpdate() {
-              console.log('From table '+this.props.updateInTable);
-              if(this.props.updateInTable){
-                for( var i in this.props.rows){
-                console.log(this.props.rows[i]);
-                }
-              }
+
             }
+            editClick = function(editValue){
+              this.setState({editRow: `${editValue}`}, () => this.props.editRowId(this.state.editRow))
+            }
+            deleteClick = function(deleteValue){
+              this.setState({deleteRow: `${deleteValue}`}, () => this.props.deleteRowId(this.state.deleteRow))
+            }
+
           render(){
               return(
                 <table className="table table-hover table-inverse text-center " value={this.props.table} hidden={!this.props.table} >
@@ -155,8 +161,8 @@
                       <td>{row.name}</td>
                       <td>{row.email}</td>
                       <td>{row.phone}</td>
-                      <td className="table-button"><div className="btn btn-danger">Delete</div></td>
-                      <td className="table-button"><div className="btn btn-primary">Edit</div></td>
+                      <td className="table-button"><div className="btn btn-danger" onClick={() => this.deleteClick(row.id)}>Delete</div></td>
+                      <td className="table-button"><div className="btn btn-primary" onClick={() => this.editClick(row.id)}>Edit</div></td>
                     </tr>
                     )}
                   </tbody>
