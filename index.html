@@ -69,19 +69,19 @@
               }
               handleNameChange =  function(e) {
                 this.setState({name: e.target.value , cancel: true});
-                if(e.target.value != ''){
+                if(e.target.value != '' && !this.state.update){
                   this.setState({submit: true})
                 }
               }
               handleEmailChange = function(e) {
                 this.setState({email: e.target.value, cancel: true});
-                if(e.target.value != ''){
+                if(e.target.value != '' && !this.state.update){
                   this.setState({submit: true})
                 }
               }
               handlePhoneChange = function(e) {
                 this.setState({phone: e.target.value, cancel: true});
-                if(e.target.value != ''){
+                if(e.target.value != '' && !this.state.update){
                   this.setState({submit: true})
                 }
               }
