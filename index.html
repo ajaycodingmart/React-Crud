@@ -6,8 +6,8 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" href="css/style.css">
     <script src="js/script.js"></script>
-    <script src="https://unpkg.com/react@latest/dist/react.js"></script>
-    <script src="https://unpkg.com/react-dom@latest/dist/react-dom.js"></script>
+    <script src="https://unpkg.com/react@15.3.1/dist/react.min.js"></script>
+    <script src="https://unpkg.com/react-dom@15.3.1/dist/react-dom.min.js"></script>
     <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
   </head>
   <body>
@@ -27,8 +27,7 @@
                   table: false,
                   rows: [],
                   updateInTable: false,
-                  editRowId: 0,
-                  deleteRowId: 0
+                  updateRow: 0
                 }
                 this.handleSubmit = this.handleSubmit.bind(this);
                 this.handleNameChange = this.handleNameChange.bind(this);
@@ -38,18 +37,21 @@
                 this.updateClick = this.updateClick.bind(this);
               }
               editInRow = function(editId){
-                this.setState({editRowId: editId, update: true});
-
+                this.setState({updateRow: editId, update: true, cancel:true, submit: false,  name: this.state.rows[editId].name, email: this.state.rows[editId].email, phone: this.state.rows[editId].phone});
               }
               deleteInRow = function(deleteId){
-                this.setState({deleteRowId: deleteId})
-              }
-              componentDidUpdate(){
-
+                var deleteRow = this.state.rows[deleteId];
+                this.state.rows.splice(deleteId, 1);
+                {this.cancelClick()};
+                this.state.update = false;
+                if(this.state.rows.length == 0){
+                  this.state.table = false
+                }
               }
 
               handleSubmit = function(e){
               e.preventDefault();
+              console.log('this is getting clicked')
               this.state.rows.push({
                 id: Date.now(),
                 name: this.state.name,
@@ -64,7 +66,7 @@
                   cancel: false
                 });
               {this.cancelClick()};
-               }
+              }
               handleNameChange =  function(e) {
                 this.setState({name: e.target.value , cancel: true});
                 if(e.target.value != ''){
@@ -87,7 +89,12 @@
                 this.setState({name: '', email: '', phone: '', cancel: false, submit: false});
               }
               updateClick = function(){
-                this.setState({update: false})
+                var row = this.state.updateRow;
+                this.state.rows[row].name = this.state.name;
+                this.state.rows[row].email = this.state.email;
+                this.state.rows[row].phone = this.state.phone;
+                {this.cancelClick()};
+                this.state.update = false;
               }
 
               render() {
@@ -116,7 +123,7 @@
                      rows={this.state.rows}
                      updateInTable={this.state.updateInTable}
                      editRowId = {(editId) => this.editInRow(editId)}
-                     deleteRowId = {(deleteId) => this.editInRow(deleteId)}
+                     deleteRowId = {(deleteId) => this.deleteInRow(deleteId)}
                      />
                   </div>
               )
@@ -129,12 +136,6 @@
                 editRow: 0,
                 deleteRow: 0
               }
-            }
-            componentDidMount(){
-            }
-
-            componentDidUpdate() {
-
             }
             editClick = function(editValue){
               this.setState({editRow: `${editValue}`}, () => this.props.editRowId(this.state.editRow))
@@ -156,13 +157,13 @@
                     </tr>
                   </thead>
                   <tbody>
-                    {this.props.rows.map((row, id) =>
-                    <tr key={id}>
+                    {this.props.rows.map((row, index) =>
+                    <tr key={index}>
                       <td>{row.name}</td>
                       <td>{row.email}</td>
                       <td>{row.phone}</td>
-                      <td className="table-button"><div className="btn btn-danger" onClick={() => this.deleteClick(row.id)}>Delete</div></td>
-                      <td className="table-button"><div className="btn btn-primary" onClick={() => this.editClick(row.id)}>Edit</div></td>
+                      <td className="table-button"><div className="btn btn-danger" onClick={() => this.deleteClick(index)}>Delete</div></td>
+                      <td className="table-button"><div className="btn btn-primary" onClick={() => this.editClick(index)}>Edit</div></td>
                     </tr>
                     )}
                   </tbody>
