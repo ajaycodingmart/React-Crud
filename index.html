@@ -15,9 +15,7 @@
     <div id="main"></div>
     <script type="text/babel">
         class Form extends React.Component{
-              constructor(props){
-                super(props);
-                this.state = {
+                state = {
                   name: '',
                   email: '',
                   phone: '',
@@ -29,13 +27,6 @@
                   updateInTable: false,
                   updateRow: 0
                 }
-                this.handleSubmit = this.handleSubmit.bind(this);
-                this.handleNameChange = this.handleNameChange.bind(this);
-                this.handleEmailChange = this.handleEmailChange.bind(this);
-                this.handlePhoneChange = this.handlePhoneChange.bind(this);
-                this.cancelClick = this.cancelClick.bind(this);
-                this.updateClick = this.updateClick.bind(this);
-              }
               editInRow = function(editId){
                 this.setState({updateRow: editId, update: true, cancel:true, submit: false,  name: this.state.rows[editId].name, email: this.state.rows[editId].email, phone: this.state.rows[editId].phone});
               }
@@ -49,7 +40,7 @@
                 }
               }
 
-              handleSubmit = function(e){
+              handleSubmit = (e) => {
               e.preventDefault();
               console.log('this is getting clicked')
               this.state.rows.push({
@@ -67,28 +58,28 @@
                 });
               {this.cancelClick()};
               }
-              handleNameChange =  function(e) {
+              handleNameChange =  (e) => {
                 this.setState({name: e.target.value , cancel: true});
                 if(e.target.value != '' && !this.state.update){
                   this.setState({submit: true})
                 }
               }
-              handleEmailChange = function(e) {
+              handleEmailChange = (e) => {
                 this.setState({email: e.target.value, cancel: true});
                 if(e.target.value != '' && !this.state.update){
                   this.setState({submit: true})
                 }
               }
-              handlePhoneChange = function(e) {
+              handlePhoneChange = (e) => {
                 this.setState({phone: e.target.value, cancel: true});
                 if(e.target.value != '' && !this.state.update){
                   this.setState({submit: true})
                 }
               }
-              cancelClick = function(){
+              cancelClick = () => {
                 this.setState({name: '', email: '', phone: '', cancel: false, submit: false});
               }
-              updateClick = function(){
+              updateClick = () => {
                 var row = this.state.updateRow;
                 this.state.rows[row].name = this.state.name;
                 this.state.rows[row].email = this.state.email;
